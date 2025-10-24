@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Card Game - Hacktoberfest 2025</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧠 Memory Card Game</h1>
+            <p>Match the cards to win!</p>
+        </header>
+
+        <div class="game-info">
+            <div class="score-board">
+                <div class="score">
+                    <span class="label">Moves:</span>
+                    <span id="moves">0</span>
+                </div>
+                <div class="score">
+                    <span class="label">Matches:</span>
+                    <span id="matches">0</span>
+                </div>
+                <div class="score">
+                    <span class="label">Time:</span>
+                    <span id="timer">00:00</span>
+                </div>
+                <div class="score">
+                    <span class="label">Hints:</span>
+                    <span id="hints">3</span>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="startBtn" class="btn primary">Start Game</button>
+                <button id="resetBtn" class="btn secondary">Reset</button>
+                <button id="hintBtn" class="btn tertiary">Hint</button>
+            </div>
+        </div>
+
+        <div class="game-settings">
+            <h3>Game Settings</h3>
+            <div class="setting-group">
+                <label for="difficulty">Difficulty:</label>
+                <select id="difficulty">
+                    <option value="easy">Easy (4x4)</option>
+                    <option value="medium" selected>Medium (4x6)</option>
+                    <option value="hard">Hard (6x6)</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label for="theme">Theme:</label>
+                <select id="theme">
+                    <option value="animals">Animals</option>
+                    <option value="fruits">Fruits</option>
+                    <option value="emoji">Emoji</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label for="sound">Sound:</label>
+                <select id="sound">
+                    <option value="on">On</option>
+                    <option value="off">Off</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label for="autoFlip">Auto Flip:</label>
+                <input type="checkbox" id="autoFlip" checked>
+            </div>
+        </div>
+
+        <div class="game-board" id="gameBoard">
+            <!-- Cards will be generated here by JavaScript -->
+        </div>
+
+        <div class="game-over" id="gameOver" style="display: none;">
+            <h2>🎉 Congratulations!</h2>
+            <p>You completed the game!</p>
+            <div class="final-stats">
+                <p>Total Moves: <span id="finalMoves">0</span></p>
+                <p>Time Taken: <span id="finalTime">00:00</span></p>
+                <p>Rating: <span id="rating">⭐⭐⭐</span></p>
+            </div>
+            <button id="playAgainBtn" class="btn primary">Play Again</button>
+        </div>
+
+        <div class="instructions">
+            <h3>How to Play:</h3>
+            <ul>
+                <li>Click on cards to flip them</li>
+                <li>Match two identical cards to score</li>
+                <li>Complete all matches to win</li>
+                <li>Try to finish in fewer moves for a better rating!</li>
+                <li>Use hints wisely - you have limited hints!</li>
+            </ul>
+        </div>
+        
+        <footer>
+            <p>Memory Card Game - Hacktoberfest 2025</p>
+            <p>Built with ❤️ for open source contributors</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
