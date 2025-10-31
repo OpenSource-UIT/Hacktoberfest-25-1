@@ -54,35 +54,40 @@
             <div class="setting-group">
                 <label for="theme">Theme:</label>
                 <select id="theme">
-                    <option value="animals">Animals</option>
+                    <option value="animals" selected>Animals</option>
                     <option value="fruits">Fruits</option>
                     <option value="emoji">Emoji</option>
                 </select>
             </div>
+            
             <div class="setting-group">
-                <label for="sound">Sound:</label>
-                <select id="sound">
-                    <option value="on">On</option>
-                    <option value="off">Off</option>
-                </select>
+                <label for="darkModeToggle">Dark Mode:</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider"></span>
+                </label>
             </div>
+            
             <div class="setting-group">
-                <label for="autoFlip">Auto Flip:</label>
-                <input type="checkbox" id="autoFlip" checked>
+                <label for="soundToggle">Sounds:</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="soundToggle" checked>
+                    <span class="slider"></span>
+                </label>
             </div>
-        </div>
+
+            </div>
 
         <div class="game-board" id="gameBoard">
-            <!-- Cards will be generated here by JavaScript -->
-        </div>
+            </div>
 
         <div class="game-over" id="gameOver" style="display: none;">
             <h2>🎉 Congratulations!</h2>
             <p>You completed the game!</p>
             <div class="final-stats">
                 <p>Total Moves: <span id="finalMoves">0</span></p>
-                <p>Time Taken: <span id="finalTime">00:00</span></p>
-                <p>Rating: <span id="rating">⭐⭐⭐</span></p>
+                <p>Time Taken: <span id="finalTime\">00:00</span></p>
+                <p>Rating: <span id="rating\">⭐⭐⭐</span></p>
             </div>
             <button id="playAgainBtn" class="btn primary">Play Again</button>
         </div>
@@ -103,6 +108,11 @@
             <p>Built with ❤️ for open source contributors</p>
         </footer>
     </div>
+
+    <audio id="flipSound" src="sounds/flip.mp3" preload="auto"></audio>
+    <audio id="matchSound" src="sounds/match.mp3" preload="auto"></audio>
+    <audio id="winSound" src="sounds/win.mp3" preload="auto"></audio>
+    <audio id="shuffleSound" src="sounds/shuffle.mp3" preload="auto"></audio>
 
     <script src="script.js"></script>
 </body>
