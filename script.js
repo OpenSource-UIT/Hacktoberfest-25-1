@@ -1,5 +1,5 @@
 // Memory Card Game - Hacktoberfest 2025
-// This file contains intentional bugs for contributors to fix
+// --- UPDATED & FIXED CODE with Sound and Dark Mode ---
 
 class MemoryGame {
     constructor() {
@@ -7,7 +7,20 @@ class MemoryGame {
         this.movesElement = document.getElementById('moves');
         this.matchesElement = document.getElementById('matches');
         this.timerElement = document.getElementById('timer');
+        this.hintsElement = document.getElementById('hints');
         this.gameOverElement = document.getElementById('gameOver');
+        
+        
+        this.difficultySelect = document.getElementById('difficulty');
+        this.themeSelect = document.getElementById('theme');
+        
+        
+        this.darkModeToggle = document.getElementById('darkModeToggle');
+        this.soundToggle = document.getElementById('soundToggle');
+        this.flipSound = document.getElementById('flipSound');
+        this.matchSound = document.getElementById('matchSound');
+        this.winSound = document.getElementById('winSound');
+        this.shuffleSound = document.getElementById('shuffleSound');
         
         this.cards = [];
         this.flippedCards = [];
@@ -16,103 +29,106 @@ class MemoryGame {
         this.gameStarted = false;
         this.gameTime = 0;
         this.timerInterval = null;
+        this.hintCount = 3;
         
-        // Bug: Missing difficulty and theme properties
-        this.difficulty = 'medium';
-        this.theme = 'animals';
+        this.difficulty = this.difficultySelect.value;
+        this.theme = this.themeSelect.value;
+        
+        
+        this.soundsEnabled = this.soundToggle.checked;
+        this.isDarkMode = false;
         
         this.initializeGame();
     }
     
     initializeGame() {
+        this.checkSavedTheme(); 
         this.setupEventListeners();
-        this.generateCards();
-        this.renderCards();
+        this.resetGame();
     }
     
     setupEventListeners() {
-        // Start game button
         document.getElementById('startBtn').addEventListener('click', () => {
             this.startGame();
         });
         
-        // Reset button
         document.getElementById('resetBtn').addEventListener('click', () => {
             this.resetGame();
         });
         
-        // Hint button
         document.getElementById('hintBtn').addEventListener('click', () => {
             this.showHint();
         });
         
-        // Play again button
         document.getElementById('playAgainBtn').addEventListener('click', () => {
             this.resetGame();
         });
         
-        // Difficulty and theme selectors
-        document.getElementById('difficulty').addEventListener('change', (e) => {
+        this.difficultySelect.addEventListener('change', (e) => {
             this.difficulty = e.target.value;
             this.resetGame();
         });
         
-        document.getElementById('theme').addEventListener('change', (e) => {
+        this.themeSelect.addEventListener('change', (e) => {
             this.theme = e.target.value;
             this.resetGame();
+        });
+        
+        
+        this.darkModeToggle.addEventListener('change', () => {
+            this.toggleDarkTheme();
+        });
+        
+        this.soundToggle.addEventListener('change', (e) => {
+            this.soundsEnabled = e.target.checked;
         });
     }
     
     generateCards() {
+    
         this.cards = [];
         const cardData = this.getCardData();
         const totalPairs = this.getTotalPairs();
         
         for (let i = 0; i < totalPairs; i++) {
-            const cardValue = cardData[i % cardData.length];
+            const cardValue = cardData[i % cardData.length]; 
             this.cards.push({ id: i * 2, value: cardValue, matched: false });
             this.cards.push({ id: i * 2 + 1, value: cardValue, matched: false });
         }
         
         this.shuffleCards();
-        
-        this.cards.forEach(card => {
-            card.flipped = false;
-        });
     }
     
     shuffleCards() {
+        
         for (let i = this.cards.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            const temp = this.cards[i];
-            this.cards[i] = this.cards[j];
-            this.cards[j] = temp;
+            [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
         }
-        
-        this.cards.sort(() => Math.random() - 0.5);
     }
     
     getCardData() {
+       
         const themes = {
-            animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮'],
-            fruits: ['🍎', '🍊', '🍋', '🍌', '🍇', '🍓', '🍑', '🍒', '🥝', '🍅', '🥥', '🍍'],
-            emoji: ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊']
+            animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧', '🐤'],
+            fruits: ['🍎', '🍊', '🍋', '🍌', '🍇', '🍓', '🍑', '🍒', '🥝', '🍅', '🥥', '🍍', 'AV', 'EG', 'MR', 'CH', 'PR', 'PA'],
+            emoji: ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗']
         };
-        
         return themes[this.theme] || themes.animals;
     }
     
     getTotalPairs() {
-        const difficulties = {
-            easy: 8,    // 4x4 grid
-            medium: 12, // 4x6 grid
-            hard: 18    // 6x6 grid
-        };
         
+        const difficulties = {
+            easy: 8,   
+            medium: 12,
+            hard: 18   
+        };
         return difficulties[this.difficulty] || 12;
     }
     
     renderCards() {
+        
         this.gameBoard.innerHTML = '';
         this.gameBoard.className = `game-board ${this.difficulty}`;
         
@@ -121,7 +137,7 @@ class MemoryGame {
             cardElement.className = 'card';
             cardElement.dataset.cardId = card.id;
             cardElement.dataset.index = index;
-            cardElement.innerHTML = '?';
+            cardElement.innerHTML = '?'; 
             
             cardElement.addEventListener('click', () => {
                 this.handleCardClick(cardElement, card);
@@ -132,32 +148,28 @@ class MemoryGame {
     }
     
     handleCardClick(cardElement, card) {
-        if (!this.gameStarted || card.matched || this.flippedCards.length >= 2) {
+        if (!this.gameStarted || card.matched || this.flippedCards.length >= 2 || cardElement.classList.contains('flipped')) {
             return;
         }
         
-        if (cardElement.classList.contains('flipped')) {
-            return;
-        }
-        
+        this.playSound('flip'); 
         this.flipCard(cardElement, card);
         this.flippedCards.push({ element: cardElement, card: card });
         
         if (this.flippedCards.length === 2) {
             this.moves++;
-            this.movesElement.textContent = this.moves * 2;
+            this.movesElement.textContent = this.moves;
             
             setTimeout(() => {
                 this.checkMatch();
-            }, 2000);
+            }, 1000); 
         }
     }
     
     flipCard(cardElement, card) {
+        
         cardElement.classList.add('flipped');
         cardElement.textContent = card.value;
-        
-        // Bug: Missing flip animation
         cardElement.classList.add('flip-animation');
         setTimeout(() => {
             cardElement.classList.remove('flip-animation');
@@ -168,30 +180,34 @@ class MemoryGame {
         const [card1, card2] = this.flippedCards;
         
         if (card1.card.value === card2.card.value) {
+            
             card1.element.classList.add('matched');
             card2.element.classList.add('matched');
             card1.card.matched = true;
             card2.card.matched = true;
             
             this.matchedPairs++;
-            this.matchesElement.textContent = this.matchedPairs * 2;
+            this.matchesElement.textContent = this.matchedPairs;
             
-            if (this.matchedPairs === this.getTotalPairs() - 1) {
+            this.playSound('match'); 
+            
+            if (this.matchedPairs === this.getTotalPairs()) {
                 this.endGame();
             }
         } else {
-            setTimeout(() => {
-                card1.element.classList.remove('flipped');
-                card2.element.classList.remove('flipped');
-                card1.element.textContent = '?';
-                card2.element.textContent = '?';
-            }, 500);
+            
+            card1.element.classList.remove('flipped');
+            card2.element.classList.remove('flipped');
+            card1.element.textContent = '?';
+            card2.element.textContent = '?';
         }
         
         this.flippedCards = [];
     }
     
     startGame() {
+        
+        if (this.gameStarted) return;
         this.gameStarted = true;
         this.startTimer();
         document.getElementById('startBtn').textContent = 'Game Started';
@@ -199,102 +215,184 @@ class MemoryGame {
     }
     
     startTimer() {
-        this.timerInterval = setInterval(() => {
-            this.gameTime++;
-            const minutes = Math.floor(this.gameTime / 1000);
-            const seconds = Math.floor((this.gameTime % 1000) / 10);
-            this.timerElement.textContent = `${minutes}:${seconds}`;
-        }, 100);
-    }
-    
-    endGame() {
-        this.gameStarted = false;
-        clearInterval(this.timerInterval);
-        
-        // Show game over screen
-        document.getElementById('finalMoves').textContent = this.moves;
-        document.getElementById('finalTime').textContent = this.timerElement.textContent;
-        
-        // Bug: Rating calculation is incorrect
-        const rating = this.calculateRating();
-        document.getElementById('rating').textContent = rating;
-        
-        this.gameOverElement.style.display = 'block';
-    }
-    
-    calculateRating() {
-        const totalPairs = this.getTotalPairs();
-        const optimalMoves = totalPairs;
-        const efficiency = optimalMoves / this.moves;
-        
-        // Bug: Rating logic is flawed
-        if (efficiency >= 0.8) return '⭐⭐⭐⭐⭐';
-        if (efficiency >= 0.6) return '⭐⭐⭐⭐';
-        if (efficiency >= 0.4) return '⭐⭐⭐';
-        return '⭐⭐';
-    }
-    
-    resetGame() {
-        this.gameStarted = false;
-        this.matchedPairs = 0;
-        this.moves = 0;
-        this.gameTime = 0;
-        this.flippedCards = [];
         
         if (this.timerInterval) {
             clearInterval(this.timerInterval);
         }
         
+        this.timerInterval = setInterval(() => {
+            this.gameTime++;
+            const minutes = Math.floor(this.gameTime / 60);
+            const seconds = this.gameTime % 60;
+            
+            this.timerElement.textContent = 
+                `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }, 1000);
+    }
+    
+    endGame() {
+        
+        this.gameStarted = false;
+        clearInterval(this.timerInterval);
+        
+        document.getElementById('finalMoves').textContent = this.moves;
+        document.getElementById('finalTime').textContent = this.timerElement.textContent;
+        
+        const rating = this.calculateRating();
+        document.getElementById('rating').textContent = rating;
+        
+        this.gameOverElement.style.display = 'block';
+        this.playSound('win'); 
+    }
+    
+    calculateRating() {
+        
+        const totalPairs = this.getTotalPairs();
+        const excessMoves = this.moves - totalPairs;
+
+        if (excessMoves <= 2) return '⭐⭐⭐⭐⭐'; 
+        if (excessMoves <= 5) return '⭐⭐⭐⭐';
+        if (excessMoves <= 10) return '⭐⭐⭐';
+        if (excessMoves <= 15) return '⭐⭐';
+        return '⭐'; 
+    }
+    
+    resetGame() {
+        
+        this.gameStarted = false;
+        this.matchedPairs = 0;
+        this.moves = 0;
+        this.gameTime = 0;
+        this.hintCount = 3;
+        this.flippedCards = [];
+        
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null; 
+        }
+        
         this.movesElement.textContent = '0';
         this.matchesElement.textContent = '0';
-        this.timerElement.textContent = '0:0';
+        this.timerElement.textContent = '00:00';
+        this.hintsElement.textContent = this.hintCount;
         
         document.getElementById('startBtn').textContent = 'Start Game';
         document.getElementById('startBtn').disabled = false;
         
         this.gameOverElement.style.display = 'none';
         
+        this.difficulty = this.difficultySelect.value;
+        this.theme = this.themeSelect.value;
+        
         this.generateCards();
         this.renderCards();
+        this.playSound('shuffle');
     }
     
     showHint() {
-        if (!this.gameStarted || this.flippedCards.length > 0) {
+        
+        if (!this.gameStarted || this.flippedCards.length > 0 || this.hintCount <= 0) {
             return;
         }
         
-        const unmatchedCards = this.cards.filter(card => !card.matched);
-        if (unmatchedCards.length > 0) {
-            const randomCard = unmatchedCards[Math.floor(Math.random() * unmatchedCards.length)];
-            const cardElement = document.querySelector(`[data-card-id="${randomCard.id}"]`);
-            
-            if (cardElement && !cardElement.classList.contains('flipped')) {
-                cardElement.style.border = '3px solid #ffc107';
+        const unmatchedCards = this.cards.filter(card => !card.matched && !card.flipped);
+        
+        if (unmatchedCards.length < 2) return;
+        
+        const firstCard = unmatchedCards[0];
+        const pairCard = unmatchedCards.find(card => card.value === firstCard.value && card.id !== firstCard.id);
+
+        if (firstCard && pairCard) {
+            const cardElement1 = document.querySelector(`[data-card-id="${firstCard.id}"]`);
+            const cardElement2 = document.querySelector(`[data-card-id="${pairCard.id}"]`);
+
+            if (cardElement1 && cardElement2) {
+                this.hintCount--;
+                this.hintsElement.textContent = this.hintCount;
+
+                cardElement1.classList.add('hint');
+                cardElement2.classList.add('hint');
+                
                 setTimeout(() => {
-                    cardElement.style.border = '';
-                }, 500);
+                    cardElement1.classList.remove('hint');
+                    cardElement2.classList.remove('hint');
+                }, 1000); 
             }
+        }
+    }
+    
+    
+    
+    playSound(soundType) {
+        if (!this.soundsEnabled) return;
+        
+        let sound;
+        switch(soundType) {
+            case 'flip':
+                sound = this.flipSound;
+                break;
+            case 'match':
+                sound = this.matchSound;
+                break;
+            case 'win':
+                sound = this.winSound;
+                break;
+            case 'shuffle':
+                sound = this.shuffleSound;
+                break;
+            default:
+                return;
+        }
+        
+        
+        sound.currentTime = 0;
+        sound.play().catch(e => console.error("Error playing sound:", e));
+    }
+    
+    toggleDarkTheme() {
+        document.body.classList.toggle('dark-theme');
+        this.isDarkMode = document.body.classList.contains('dark-theme');
+        
+        try {
+            localStorage.setItem('memoryGameDarkMode', this.isDarkMode);
+        } catch (e) {
+            console.error("Could not save dark mode preference:", e);
+        }
+        
+        
+        this.darkModeToggle.checked = this.isDarkMode;
+    }
+    
+    checkSavedTheme() {
+        try {
+            const savedMode = localStorage.getItem('memoryGameDarkMode');
+            if (savedMode === 'true') {
+                this.isDarkMode = true;
+                document.body.classList.add('dark-theme');
+                this.darkModeToggle.checked = true;
+            } else {
+                this.isDarkMode = false;
+                document.body.classList.remove('dark-theme');
+                this.darkModeToggle.checked = false;
+            }
+        } catch (e) {
+            console.error("Could not check saved theme:", e);
+            this.isDarkMode = false; 
         }
     }
 }
 
-// Initialize game when DOM is loaded
+
 document.addEventListener('DOMContentLoaded', () => {
     new MemoryGame();
 });
 
+
 document.addEventListener('keydown', (e) => {
-    console.log('Keyboard navigation not implemented yet');
+    // console.log('Keyboard navigation not implemented yet');
 });
 
-function playSound(soundType) {
-    console.log(`Playing ${soundType} sound`);
-}
-
+// saveHighScore stub remains
 function saveHighScore(score) {
-    console.log('High score saving not implemented yet');
-}
-
-function toggleDarkTheme() {
-    console.log('Dark theme toggle not implemented yet');
+    // console.log('High score saving not implemented yet');
 }
